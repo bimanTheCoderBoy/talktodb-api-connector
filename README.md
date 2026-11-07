@@ -1,5 +1,10 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="talkToDB" width="128" height="128" />
+  <img
+    src="https://raw.githubusercontent.com/bimanTheCoderBoy/talktodb-api-connector/master/assets/logo.png"
+    alt="talkToDB"
+    width="128"
+    height="128"
+  />
 </p>
 
 <h1 align="center">talktodb-api-connector</h1>

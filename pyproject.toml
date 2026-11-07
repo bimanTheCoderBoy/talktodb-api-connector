@@ -1,6 +1,6 @@
 [project]
 name = "talktodb-api-connector"
-version = "0.1.2"
+version = "0.1.3"
 description = "FastAPI app: configurable SQL backend, read-only mode, access controls"
 readme = "README.md"
 authors = [
@@ -17,8 +17,9 @@ dependencies = [
 ]
 
 [project.urls]
-Github = "https://github.com/bimanTheCoderBoy/talktodb-api-connector"
+Homepage = "https://github.com/bimanTheCoderBoy/talktodb-api-connector"
 Documentation = "https://github.com/bimanTheCoderBoy/talktodb-api-connector#readme"
+"Source Code" = "https://github.com/bimanTheCoderBoy/talktodb-api-connector"
 
 [project.scripts]
 talktodb = "talktodb_api_connector.cli.main:main"
@@ -29,8 +30,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/assets/favicon.svg",
-    "/assets/logo.svg",
+    "/assets",
 ]
 
 [tool.hatch.build.targets.wheel]
