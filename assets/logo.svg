@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="talkToDB — AI and database">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#115e59"/>
+      <stop offset="0.5" stop-color="#0b4f4a"/>
+      <stop offset="1" stop-color="#05302e"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop stop-color="#2dd4bf" stop-opacity="0.4"/>
+      <stop offset="0.6" stop-color="#14b8a6" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#14b8a6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="disk" x1="64" y1="53" x2="64" y2="71" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f0fdfa"/>
+      <stop offset="1" stop-color="#5eead4"/>
+    </linearGradient>
+    <linearGradient id="barrel" x1="37" y1="62" x2="91" y2="103" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f766e"/>
+      <stop offset="0.5" stop-color="#0b514c"/>
+      <stop offset="1" stop-color="#063f3b"/>
+    </linearGradient>
+    <linearGradient id="node" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f5d0fe"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="28" fill="url(#tile)"/>
+  <circle cx="64" cy="66" r="60" fill="url(#halo)"/>
+  <rect x="10.5" y="10.5" width="107" height="107" rx="22" stroke="#99f6e4" stroke-opacity="0.18" stroke-width="1"/>
+
+  <!-- Neural links -->
+  <g stroke-linecap="round" fill="none">
+    <path d="M38 36 L64 25 L90 36" stroke="#c4b5fd" stroke-width="2.4" stroke-opacity="0.9"/>
+    <path d="M38 36 L90 36" stroke="#c4b5fd" stroke-width="1.6" stroke-opacity="0.3"/>
+    <path d="M22 48 L38 36" stroke="#c4b5fd" stroke-width="2" stroke-opacity="0.8"/>
+    <path d="M106 48 L90 36" stroke="#c4b5fd" stroke-width="2" stroke-opacity="0.8"/>
+    <path d="M22 48 L43 58" stroke="#5eead4" stroke-width="2" stroke-opacity="0.7"/>
+    <path d="M106 48 L85 58" stroke="#5eead4" stroke-width="2" stroke-opacity="0.7"/>
+    <path d="M64 32 V55" stroke="#5eead4" stroke-width="2.2" stroke-opacity="0.8"/>
+  </g>
+
+  <!-- Neural nodes -->
+  <circle cx="64" cy="25" r="11" fill="#a78bfa" opacity="0.2"/>
+  <circle cx="64" cy="25" r="6.5" fill="url(#node)"/>
+  <circle cx="38" cy="36" r="8.5" fill="#a78bfa" opacity="0.16"/>
+  <circle cx="38" cy="36" r="5" fill="url(#node)"/>
+  <circle cx="90" cy="36" r="8.5" fill="#a78bfa" opacity="0.16"/>
+  <circle cx="90" cy="36" r="5" fill="url(#node)"/>
+  <circle cx="22" cy="48" r="4" fill="#ddd6fe"/>
+  <circle cx="106" cy="48" r="4" fill="#ddd6fe"/>
+
+  <!-- Database -->
+  <ellipse cx="64" cy="108" rx="30" ry="4.5" fill="#2dd4bf" opacity="0.16"/>
+  <path d="M37 62 V94 c0 4.97 12.09 9 27 9 s27 -4.03 27 -9 V62" fill="url(#barrel)"/>
+  <path d="M37 62 V94 c0 4.97 12.09 9 27 9 s27 -4.03 27 -9 V62" stroke="#ecfdf5" stroke-width="3" stroke-linecap="round"/>
+  <path d="M37 79 c0 4.97 12.09 9 27 9 s27 -4.03 27 -9" stroke="#99f6e4" stroke-width="2" stroke-opacity="0.85" stroke-linecap="round"/>
+  <ellipse cx="64" cy="62" rx="27" ry="9" fill="url(#disk)"/>
+  <ellipse cx="64" cy="62" rx="27" ry="9" stroke="#ecfdf5" stroke-width="2.5"/>
+
+  <!-- Circuit on the top disk -->
+  <path d="M51 62 H77" stroke="#0f766e" stroke-width="1.4" stroke-opacity="0.45"/>
+  <circle cx="51" cy="62" r="2.4" fill="#7c3aed"/>
+  <circle cx="64" cy="59.6" r="2.4" fill="#0f766e"/>
+  <circle cx="77" cy="62" r="2.4" fill="#7c3aed"/>
+
+  <!-- Sparks -->
+  <path d="M15 82 L16.6 86 L20.6 87.6 L16.6 89.2 L15 93.2 L13.4 89.2 L9.4 87.6 L13.4 86 Z" fill="#99f6e4" opacity="0.85"/>
+  <path d="M113 82 L114.6 86 L118.6 87.6 L114.6 89.2 L113 93.2 L111.4 89.2 L107.4 87.6 L111.4 86 Z" fill="#f5d0fe" opacity="0.85"/>
+</svg>

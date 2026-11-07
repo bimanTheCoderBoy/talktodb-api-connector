@@ -16,6 +16,10 @@ dependencies = [
     "uvicorn>=0.52.4",
 ]
 
+[project.urls]
+Github = "https://github.com/bimanTheCoderBoy/talktodb-api-connector"
+Documentation = "https://github.com/bimanTheCoderBoy/talktodb-api-connector#readme"
+
 [project.scripts]
 talktodb = "talktodb_api_connector.cli.main:main"
 
@@ -23,5 +27,14 @@ talktodb = "talktodb_api_connector.cli.main:main"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.sdist]
+include = [
+    "/assets/favicon.svg",
+    "/assets/logo.svg",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/talktodb_api_connector"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"assets" = "talktodb_api_connector/assets"

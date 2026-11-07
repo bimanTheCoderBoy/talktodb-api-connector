@@ -1,4 +1,12 @@
-# talktodb-api-connector
+<p align="center">
+  <img src="assets/logo.svg" alt="talkToDB" width="128" height="128" />
+</p>
+
+<h1 align="center">talktodb-api-connector</h1>
+
+<p align="center">
+  <strong>AI-ready SQL bridge</strong> — connect agents and apps to your database on your machine, with config you control.
+</p>
 
 Runs a small HTTP API on your machine that reads database settings from a local config file and executes SQL you send it. A command-line tool creates and edits that config, starts or stops the API, and on Windows can register the API as a system service. Nothing in the package ships your data off the machine except SQL you choose to run against your own database.
 
