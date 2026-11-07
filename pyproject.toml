@@ -1,6 +1,6 @@
 [project]
 name = "talktodb-api-connector"
-version = "0.1.0"
+version = "0.1.2"
 description = "FastAPI app: configurable SQL backend, read-only mode, access controls"
 readme = "README.md"
 authors = [
