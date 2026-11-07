@@ -1,0 +1,27 @@
+[project]
+name = "talktodb-api-connector"
+version = "0.1.0"
+description = "FastAPI app: configurable SQL backend, read-only mode, access controls"
+readme = "README.md"
+authors = [
+    { name = "Biman Kumar Das", email = "daskumarbiman2020@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg>=0.32.0",
+    "fastapi>=0.141.1",
+    "pydantic>=2.13.4",
+    "sqlalchemy[asyncio]>=2.0",
+    "typer>=0.28.0",
+    "uvicorn>=0.52.4",
+]
+
+[project.scripts]
+talktodb = "talktodb_api_connector.cli.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/talktodb_api_connector"]

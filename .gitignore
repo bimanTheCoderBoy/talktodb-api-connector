@@ -1,0 +1,20 @@
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local virtual environments
+.venv/
+venv/
+git-personal-config.sh
+# Test / coverage caches (local only)
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ruff_cache/
