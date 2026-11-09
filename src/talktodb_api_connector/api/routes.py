@@ -45,4 +45,4 @@ async def post_query(
     service: Annotated[QueryService, Depends(get_query_service)],
 ) -> RunDbQueryOutput:
     """Execute SQL; delegates to :class:`QueryService`."""
-    return await service.run_query(body.sql, body.params)
+    return await service.run_query(body.query, body.params)

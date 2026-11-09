@@ -9,6 +9,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any, get_args, get_origin
 from xml.sax.saxutils import escape
@@ -22,7 +23,10 @@ from talktodb_api_connector.database_registry import _async_drivername
 CONFIG_PATH = Path.home() / ".talktodb.config"
 PID_PATH = Path.home() / ".talktodb.pid"
 SERVICE_XML_PATH = Path.home() / ".talktodb-service.xml"
-SERVICE_LOG_DIR = Path.home() / ".talktodb" / "logs"
+LOG_DIR = Path.home() / ".talktodb" / "logs"
+SERVICE_LOG_DIR = LOG_DIR
+# stdout+stderr of the background uvicorn process started by ``talktodb api start``.
+API_LOG_PATH = LOG_DIR / "api.log"
 
 # Valid keys under ``server`` / ``database`` in ~/.talktodb.config (must match :class:`ServerConfig` / :class:`DatabaseConfig`).
 _SERVER_KEYS = frozenset(ServerConfig.model_fields.keys())
@@ -244,8 +248,8 @@ def _parse_field_value(section: str, key: str, raw: str) -> Any:
             return True
         if low in {"0", "false", "no", "off"}:
             return False
-            typer.echo(f"Invalid boolean for {section}.{key}: {raw!r}", err=True)
-            raise typer.Exit(code=1)
+        typer.echo(f"Invalid boolean for {section}.{key}: {raw!r}", err=True)
+        raise typer.Exit(code=1)
 
     if ann is int:
         try:
@@ -257,7 +261,20 @@ def _parse_field_value(section: str, key: str, raw: str) -> Any:
     if origin is list and args and args[0] is str:
         stripped = raw.strip()
         if stripped.startswith("["):
-            parsed = json.loads(stripped)
+            try:
+                parsed = json.loads(stripped)
+            except json.JSONDecodeError as exc:
+                typer.echo(
+                    f"{section}.{key} starts with '[' so it must be a JSON array, but it "
+                    f"could not be parsed: {exc}\n"
+                    f"  Received: {stripped}\n\n"
+                    "Shell quoting makes JSON awkward; a comma-separated list works too:\n"
+                    f"  talktodb config set {section}.{key} http://localhost:5173\n"
+                    f"  talktodb config set {section}.{key} http://localhost:5173,https://app.example.com\n"
+                    f"  talktodb config set {section}.{key} []        (clears the list)",
+                    err=True,
+                )
+                raise typer.Exit(code=1) from exc
             if not isinstance(parsed, list):
                 typer.echo(f"Expected a JSON array for {section}.{key}", err=True)
                 raise typer.Exit(code=1)
@@ -333,6 +350,16 @@ def config_ls() -> None:
 
     redacted = _strip_password_from_nested(data)
     typer.echo(json.dumps(redacted, indent=2, ensure_ascii=False))
+
+
+def _tail_lines(path: Path, count: int) -> list[str]:
+    """Last ``count`` lines of ``path``; empty list when the file is missing or unreadable."""
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+    lines = text.splitlines()
+    return lines[-count:] if count > 0 else lines
 
 
 def _pid_running(pid: int) -> bool:
@@ -445,10 +472,6 @@ def server_start() -> None:
 
     _ensure_async_driver_importable(settings)
 
-    public = settings.model_dump(mode="json")
-    typer.echo("Starting server with this configuration:")
-    typer.echo(json.dumps(public, indent=2, ensure_ascii=False))
-
     cmd = [
         sys.executable,
         "-m",
@@ -463,19 +486,28 @@ def server_start() -> None:
     if os.name == "nt":
         creationflags = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
 
-    proc = subprocess.Popen(
-        cmd,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        close_fds=True,
-        creationflags=creationflags,
-    )
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    log_file = API_LOG_PATH.open("w", encoding="utf-8", errors="replace")
+
+    env = dict(os.environ)
+    env["PYTHONUNBUFFERED"] = "1"
+
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            stdin=subprocess.DEVNULL,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            close_fds=True,
+            creationflags=creationflags,
+            env=env,
+        )
+    finally:
+        log_file.close()
+
     PID_PATH.write_text(str(proc.pid) + "\n", encoding="utf-8")
-    typer.echo(
-        f"Started server PID {proc.pid} (127.0.0.1:{settings.server.port}). "
-        f"PID file: {PID_PATH}"
-    )
+    typer.echo(f"Started server PID {proc.pid} (127.0.0.1:{settings.server.port}).")
+    typer.echo(f"Logs at {API_LOG_PATH}")
 
 
 @api_app.command("stop")
@@ -506,6 +538,40 @@ def server_stop() -> None:
 
     PID_PATH.unlink(missing_ok=True)
     typer.echo(f"Stopped server (PID {pid}).")
+
+
+@api_app.command("logs")
+def server_logs(
+    lines: int = typer.Option(50, "--lines", "-n", help="How many trailing lines to print."),
+    follow: bool = typer.Option(False, "--follow", "-f", help="Keep printing new lines (Ctrl+C to stop)."),
+) -> None:
+    """Show the log file written by 'talktodb api start'."""
+    typer.echo(f"Log file: {API_LOG_PATH}")
+    if not API_LOG_PATH.is_file():
+        typer.echo(
+            "No log file yet. Run 'talktodb api start' first "
+            "(the Windows service writes its own files in the same folder).",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    for line in _tail_lines(API_LOG_PATH, lines):
+        typer.echo(line)
+
+    if not follow:
+        return
+
+    try:
+        with API_LOG_PATH.open("r", encoding="utf-8", errors="replace") as handle:
+            handle.seek(0, os.SEEK_END)
+            while True:
+                chunk = handle.readline()
+                if chunk:
+                    typer.echo(chunk.rstrip("\n"))
+                    continue
+                time.sleep(0.5)
+    except KeyboardInterrupt:
+        typer.echo("")
 
 
 def main() -> None:

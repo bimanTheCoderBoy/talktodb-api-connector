@@ -25,8 +25,9 @@ Install from PyPI with ```pip install talktodb-api-connector```. The talktodb co
 |---------|-------------|
 | talktodb config set | Set one setting using a dotted name and a value (for example database.host and localhost). |
 | talktodb config ls | Show the current config as JSON; the database password is never printed. |
-| talktodb api start | Check config and database driver, print the config, then start the API in a background process and remember its process id. |
+| talktodb api start | Check config and database driver, start the API in a background process, and remember its process id. |
 | talktodb api stop | Stop the API using the saved process id. |
+| talktodb api logs | Print the API log file; add -n for more lines or -f to keep watching. |
 | talktodb service install | Windows only. Register the API as a Windows service using WinSW; the service is not started automatically. |
 | talktodb service remove | Windows only. Unregister that service and remove the WinSW service definition file. |
 
@@ -34,6 +35,10 @@ Install from PyPI with ```pip install talktodb-api-connector```. The talktodb co
 
 - **talktodb api start** — Run the API yourself as a background process in your user session.
 - **talktodb service install** — Register the same API with Windows so it can start at boot or from Services; each time the service starts, it reads the config file again from disk.
+
+### Logs
+
+Each talktodb api start clears and then writes to .talktodb/logs/api.log in your home directory. Read it with talktodb api logs, or follow it live with talktodb api logs -f. The Windows service writes its own files into the same .talktodb/logs folder.
 
 ## Configuration
 
@@ -45,6 +50,16 @@ Settings live in a JSON file in your home directory named .talktodb.config. Use 
 - **server.allowed_origins** — Browser Origin values allowed for cross-origin requests (CORS); default empty list. An empty list means browsers on other sites cannot call the API.
 
 The API always binds to 127.0.0.1 on your machine. That address is not stored in the config file.
+
+Pass allowed_origins as a plain comma-separated list, which avoids shell quoting problems:
+
+```bash
+talktodb config set server.allowed_origins http://localhost:5173
+talktodb config set server.allowed_origins http://localhost:5173,https://app.example.com
+talktodb config set server.allowed_origins []
+```
+
+A value starting with [ is read as JSON, so every entry needs double quotes (for example ["http://localhost:5173"]); Command Prompt usually strips those quotes, which is why the comma-separated form is easier. Setting the single value * allows any website to call the API from a browser and is only sensible for local development. Restart the API after changing origins so the new list takes effect.
 
 ### Database
 

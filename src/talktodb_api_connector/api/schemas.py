@@ -46,10 +46,10 @@ class RunDbQueryRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    sql: str = Field(..., description="SQL statement to execute.")
+    query: str = Field(..., description="SQL statement to execute.")
     params: dict[str, Any] | None = Field(
         default=None,
-        description="Optional named parameters for bound placeholders in ``sql``.",
+        description="Optional named parameters for bound placeholders in ``query``.",
     )
 
 
